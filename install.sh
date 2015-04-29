@@ -65,8 +65,8 @@ function install_files() {
 	sudo curl --silent -L --url ${DOWNLOADS_PATH}/org.jenkins-ci.slave.jnlp.plist -o ${SERVICE_WRKSPC}/org.jenkins-ci.slave.jnlp.plist
 	sudo sed -i '' "s#\${JENKINS_HOME}#${SERVICE_WRKSPC}#g" ${SERVICE_WRKSPC}/org.jenkins-ci.slave.jnlp.plist
 	sudo sed -i '' "s#\${JENKINS_USER}#${SERVICE_USER}#g" ${SERVICE_WRKSPC}/org.jenkins-ci.slave.jnlp.plist
-	sudo rm -f /Library/LaunchDaemons/org.jenkins-ci.slave.jnlp.plist
-	sudo install -o root -g wheel -m 644 ${SERVICE_WRKSPC}/org.jenkins-ci.slave.jnlp.plist /Library/LaunchDaemons/org.jenkins-ci.slave.jnlp.plist
+	sudo rm -f /Library/LaunchAgents/org.jenkins-ci.slave.jnlp.plist
+	sudo install -o root -g wheel -m 644 ${SERVICE_WRKSPC}/org.jenkins-ci.slave.jnlp.plist /Library/LaunchAgents/org.jenkins-ci.slave.jnlp.plist
 	# download the jenkins JNLP slave script
 	sudo curl --silent -L --url ${DOWNLOADS_PATH}/slave.jnlp.sh -o ${SERVICE_WRKSPC}/slave.jnlp.sh
 	sudo chmod 755 ${SERVICE_WRKSPC}/slave.jnlp.sh
@@ -307,16 +307,16 @@ function start_daemon {
 The Jenkins JNLP Slave service is installed
 
 This service can be started using the command
-    sudo launchctl load /Library/LaunchDaemons/org.jenkins-ci.slave.jnlp.plist
+    sudo launchctl load /Library/LaunchAgents/org.jenkins-ci.slave.jnlp.plist
 and stopped using the command
-    sudo launchctl unload /Library/LaunchDaemons/org.jenkins-ci.slave.jnlp.plist
+    sudo launchctl unload /Library/LaunchAgents/org.jenkins-ci.slave.jnlp.plist
 
 This service logs to /var/log/${SERVICE_USER}/org.jenkins-ci.slave.jnlp.log
 "
 	read -p "Start the slave service now (yes/no) [yes]? " CONFIRM
 	CONFIRM=${CONFIRM:-"yes"}
 	if [[ "${CONFIRM}" =~ ^[Yy] ]] ; then
-		sudo launchctl load -F /Library/LaunchDaemons/org.jenkins-ci.slave.jnlp.plist
+		sudo launchctl load -F /Library/LaunchAgents/org.jenkins-ci.slave.jnlp.plist
 		echo
 		read -p "Open Console.app to view logs now (yes/no) [yes]? " CONFIRM
 		CONFIRM=${CONFIRM:-"yes"}
