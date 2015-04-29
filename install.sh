@@ -150,7 +150,14 @@ function configure_daemon {
 		echo "Unable to authenticate ${MASTER_USER} with this token"
 		read -p "API token for ${MASTER_USER}: " SLAVE_TOKEN
 	done
-	OSX_KEYCHAIN_PASS=${OSX_KEYCHAIN_PASS:-`env LC_CTYPE=C tr -dc "a-zA-Z0-9-_" < /dev/urandom | head -c 20`}
+
+	if [ -z $OSX_KEYCHAIN_PASS ]; then
+		OSX_KEYCHAIN_PASS=${OSX_KEYCHAIN_PASS:-`env LC_CTYPE=C tr -dc "a-zA-Z0-9-_" < /dev/urandom | head -c 12`}
+		echo
+		read -p "Password for account and login keychain [$OSX_KEYCHAIN_PASS]: " RESPONSE
+		OSX_KEYCHAIN_PASS=${RESPONSE:-$OSX_KEYCHAIN_PASS}
+		sudo dscl /Local/Default -passwd /Users/${SERVICE_USER} ${OSX_KEYCHAIN_PASS}
+	fi
 	create_keychain
 	sudo -i -u ${SERVICE_USER} ${SERVICE_WRKSPC}/security.sh set-password --password=${SLAVE_TOKEN} --account=${MASTER_USER} --service=\"${SLAVE_NODE}\"
 	KEYSTORE_PASS=`sudo -i -u ${SERVICE_USER} ${SERVICE_WRKSPC}/security.sh get-password --account=${SERVICE_USER} --service=java_truststore`
